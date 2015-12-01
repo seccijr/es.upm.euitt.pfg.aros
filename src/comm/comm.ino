@@ -5,7 +5,6 @@
 #include <Master.h>
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
-#include "utility/VectorSerializer.h"
 
 char buffer[MMT_PACKET_LEN] = {0};
 
