@@ -3,7 +3,8 @@ set(CMAKE_TOOLCHAIN_FILE cmake/ArduinoToolchain.cmake)
 set(PROJECT_NAME Aros)
 set(Comm_RECURSE true)
 set(Master_RECURSE true)
-set(ROLE "master" CACHE STRING "Role to be used during compilation. Default master.")
+set(ArduinoUnit_RECURSE true)
+set(ROLE "master" CACHE STRING "Role to be used during compilation. Default utility.")
 set(PORT "/dev/ttyACM0" CACHE STRING "TTY port where the Arduino board is connected.")
 project(${PROJECT_NAME})
 
@@ -16,6 +17,12 @@ file(GLOB_RECURSE aros_SRCS
 file(GLOB_RECURSE aros_HDRS
     "src/${ROLE}/*.h")
 
+file(GLOB_RECURSE utility_SRCS
+    "src/utility/*.cpp")
+
+file(GLOB_RECURSE utility_HDRS
+    "src/utility/*.h")
+
 file(GLOB_RECURSE testing_SRCS
     "test/${ROLE}/*.cpp")
 
@@ -26,7 +33,7 @@ include_directories(src test)
 
 generate_arduino_firmware(aros
     SKETCH  ${CMAKE_CURRENT_SOURCE_DIR}/src/${ROLE}/${ROLE}.ino
-    SRCS ${aros_SRCS} ${testing_SRCS}
-    HDRS ${aros_HDRS} ${testing_HDRS}
+    SRCS ${utility_SRCS} ${aros_SRCS} ${testing_SRCS}
+    HDRS ${utility_HDRS} ${aros_HDRS} ${testing_HDRS}
     BOARD uno
     PORT  ${PORT})
