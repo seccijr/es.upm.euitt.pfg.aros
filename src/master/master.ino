@@ -1,6 +1,7 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Master.h>
+#include "EchoHandler.h"
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
 
@@ -8,9 +9,11 @@ void setup() {
     Wire.begin(AROS_MASTER_WIRE_ADD);
     Wire.onReceive(commVector);
     Serial.begin(9600);
+    Registrar.registerSubscriber(Localhost, &EchoHandler);
 }
 
 void loop() {
+    Registrar.flushQueue();
 }
 
 void commVector(int n) {
@@ -22,7 +25,6 @@ void commVector(int n) {
         }
         Vector v;
         VectorSerializer::deserialize(&v, (const byte *)buffer);
-        VectorSerializer::humanReadable((const Vector)v, Serial);
-        Serial.println();
+        Registrar.publish(v);
     }
 }
