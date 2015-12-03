@@ -1,18 +1,16 @@
 #ifndef _REMOTEHANDLER_H
 #define _REMOTEHANDLER_H
 
-#include <Comm.h>
+#include <Wire.h>
 #include <Master.h>
-#include <IPAddress.h>
 
 class RemoteHandlerClass: public EventHandler {
     public:
         RemoteHandlerClass();
-        RemoteHandlerClass(WiFlyUDPClass *wiflyudp, IPAddress dest);
+        RemoteHandlerClass(TwoWire *wire);
         void handle(const Vector &v);
     private:
-        WiFlyUDPClass *wiflyudp_;
-        IPAddress destination_;
+        TwoWire *wire_;
 };
 
 #endif

@@ -2,14 +2,17 @@
 #include <Wire.h>
 #include <Master.h>
 #include "EchoHandler.h"
+#include "FWHandler.h"
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
 
 void setup() {
+    Serial.begin(9600);
     Wire.begin(AROS_MASTER_WIRE_ADD);
     Wire.onReceive(commVector);
-    Serial.begin(9600);
-    Registrar.registerSubscriber(Localhost, &EchoHandler);
+    const AddressClass wildcard((const byte)'*', (const byte[4]){'*', '*', '*', '*'});
+    Registrar.registerSubscriber(wildcard, &FWHandler);
+    Registrar.registerSubscriber((const AddressClass)Localhost, &EchoHandler);
 }
 
 void loop() {
@@ -18,13 +21,8 @@ void loop() {
 
 void commVector(int n) {
     if (n == MMT_VECTOR_LEN) {
-        byte buffer[MMT_VECTOR_LEN] = {0};
-        int i = 0;
-        while (Wire.available() > 0) {
-            buffer[i++] = Wire.read();
-        }
         Vector v;
-        VectorSerializer::deserialize(&v, (const byte *)buffer);
+        VectorSerializer::deserialize(&v, &Wire);
         Registrar.publish(v);
     }
 }

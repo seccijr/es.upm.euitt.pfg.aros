@@ -1,6 +1,6 @@
 #include "FWHandler.h"
 
-FWHandlerClass::FWHandlerClass(WiFlyUDPClass *wiflyudp, RegistrarClass *registrar): wiflyudp_(wiflyudp), registrar_(registrar) {
+FWHandlerClass::FWHandlerClass(TwoWire *wire, RegistrarClass *registrar): wire_(wire), registrar_(registrar) {
     rindex_ = 0;
 }
 
@@ -11,8 +11,7 @@ void FWHandlerClass::handle(const Vector &v) {
     bool smaller = rindex_ < AROS_MAX_REMOTES;
     if (!address_handled && !match_localhost && smaller) {
         raddr_[rindex_] = addr;
-        IPAddress ip = IPAddress(addr.endpoint[0], addr.endpoint[1], addr.endpoint[2], addr.endpoint[3]);
-        rbuf_[rindex_] = RemoteHandlerClass(wiflyudp_, ip);
+        rbuf_[rindex_] = RemoteHandlerClass(wire_);
         registrar_->registerSubscriber((const AddressClass)addr, &(rbuf_[rindex_]));
         rindex_++;
     }
@@ -26,3 +25,5 @@ bool FWHandlerClass::handled(const AddressClass &addr) {
         }
     }
 }
+
+FWHandlerClass FWHandler(&Wire, &Registrar);
