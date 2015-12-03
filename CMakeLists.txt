@@ -4,8 +4,9 @@ set(PROJECT_NAME Aros)
 set(Comm_RECURSE true)
 set(Master_RECURSE true)
 set(ArduinoUnit_RECURSE true)
-set(ROLE "master" CACHE STRING "Role to be used during compilation. Default utility.")
+set(ROLE "master" CACHE STRING "Role to be used during compilation. Default master.")
 set(PORT "/dev/ttyACM0" CACHE STRING "TTY port where the Arduino board is connected.")
+set(SKETCH_DIR "src" CACHE STRING "Directory to look for the scketch. Default src.")
 project(${PROJECT_NAME})
 
 register_hardware_platform(${ARDUINO_SDK_PATH}/hardware/arduino/avr/)
@@ -26,7 +27,7 @@ file(GLOB_RECURSE testing_HDRS
 include_directories(src test)
 
 generate_arduino_firmware(aros
-    SKETCH  ${CMAKE_CURRENT_SOURCE_DIR}/src/${ROLE}/${ROLE}.ino
+    SKETCH  ${CMAKE_CURRENT_SOURCE_DIR}/${SKETCH_DIR}/${ROLE}/${ROLE}.ino
     SRCS ${aros_SRCS} ${testing_SRCS}
     HDRS ${aros_HDRS} ${testing_HDRS}
     BOARD uno
