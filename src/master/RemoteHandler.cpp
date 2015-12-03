@@ -4,8 +4,13 @@
 #include <Master.h>
 #include <IPAddress.h>
 
-RemoteHandlerClass::RemoteHandlerClass(WiFlyUDPClass *wiflyudp, RegistrarClass *registrar, IPAddress dest):
-    wiflyudp_(wiflyudp), registrar_(registrar), destination_(dest) {
+RemoteHandlerClass::RemoteHandlerClass() {
+    wiflyudp_ = &WiFlyUDP;
+    destination_ = IPAddress();
+}
+
+RemoteHandlerClass::RemoteHandlerClass(WiFlyUDPClass *wiflyudp, IPAddress dest):
+    wiflyudp_(wiflyudp), destination_(dest) {
 
     }
 
@@ -14,5 +19,3 @@ void RemoteHandlerClass::handle(const Vector &v) {
     PacketSerializer::serialize(v.packet, wiflyudp_);
     wiflyudp_->endPacket();
 }
-
-RemoteHandlerClass RemoteHandler(&WiFlyUDP, &Registrar, IPAddress(255, 255, 255, 255));

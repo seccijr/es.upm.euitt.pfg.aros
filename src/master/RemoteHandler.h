@@ -7,14 +7,12 @@
 
 class RemoteHandlerClass: public EventHandler {
     public:
-        RemoteHandlerClass(WiFlyUDPClass *wiflyudp, RegistrarClass *registrar, IPAddress dest);
+        RemoteHandlerClass();
+        RemoteHandlerClass(WiFlyUDPClass *wiflyudp, IPAddress dest);
         void handle(const Vector &v);
     private:
         WiFlyUDPClass *wiflyudp_;
-        RegistrarClass *registrar_;
         IPAddress destination_;
 };
-
-extern RemoteHandlerClass RemoteHandler;
 
 #endif
