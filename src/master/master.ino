@@ -17,6 +17,7 @@ void setup() {
 
 void loop() {
     Registrar.flushQueue();
+    delay(1000);
 }
 
 void commVector(int n) {
