@@ -1,9 +1,8 @@
-#ifndef _ECHOHANDLETTEST_H
-#define _ECHOHANDLETTEST_H
+#ifndef _ECHOHANDLERTEST_H
+#define _ECHOHANDLERTEST_H
 
 #include <Arduino.h>
 #include <ArduinoUnit.h>
-#include <EchoHandler.h>
 
 class EchoHandlerTest: public TestOnce {
     public:

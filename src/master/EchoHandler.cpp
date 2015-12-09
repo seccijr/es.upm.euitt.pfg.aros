@@ -7,15 +7,14 @@ EchoHandlerClass::EchoHandlerClass(RegistrarClass *registrar):
     }
 
 void EchoHandlerClass::handle(const Vector &v) {
-    Packet epckt = v.packet;
-    epckt.origin = v.packet.target;
-    epckt.target = v.packet.origin;
-    Vector ev;
-    for (int i = 0; i < MMT_ENDPOINT_LEN; i++) {
-        ev.destination[i] = v.source[i];
-        ev.source[i] = v.destination[i];
-    }
-    ev.packet = epckt;
+    Direction backward = {
+        v.direction.destination,
+        v.direction.source
+    };
+    Vector ev = {
+        v.packet,
+        backward
+    };
     registrar_->publish((const Vector)ev);
 }
 

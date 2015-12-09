@@ -10,9 +10,8 @@ void setup() {
     Serial.begin(9600);
     Wire.begin(AROS_MASTER_WIRE_ADD);
     Wire.onReceive(commVector);
-    const AddressClass wildcard((const byte)'*', (const byte[4]){'*', '*', '*', '*'});
-    Registrar.registerSubscriber(wildcard, &FWHandler);
-    Registrar.registerSubscriber((const AddressClass)Localhost, &EchoHandler);
+    Registrar.registerSubscriber(Wildcard, &FWHandler);
+    Registrar.registerSubscriber(Localhost, &EchoHandler);
 }
 
 void loop() {

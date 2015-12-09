@@ -7,10 +7,12 @@ RemoteHandlerClass::RemoteHandlerClass() {
     wire_ = &Wire;
 }
 
-RemoteHandlerClass::RemoteHandlerClass(TwoWire *wire): wire_(wire_) {}
+RemoteHandlerClass::RemoteHandlerClass(TwoWire *wire): wire_(wire) {}
 
 void RemoteHandlerClass::handle(const Vector &v) {
     wire_->beginTransmission(AROS_COMM_WIRE_ADD);
-    PacketSerializer::serialize(v.packet, wire_);
+    VectorSerializer::serialize(v, wire_);
     wire_->endTransmission();
 }
+
+RemoteHandlerClass RemoteHandler(&Wire);

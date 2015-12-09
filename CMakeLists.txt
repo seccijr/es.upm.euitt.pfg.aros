@@ -24,7 +24,7 @@ file(GLOB_RECURSE testing_SRCS
 file(GLOB_RECURSE testing_HDRS
     "test/${ROLE}/*.h")
 
-include_directories(src test)
+include_directories(src/${ROLE} src/utility test)
 
 generate_arduino_firmware(aros
     SKETCH  ${CMAKE_CURRENT_SOURCE_DIR}/${SKETCH_DIR}/${ROLE}/${ROLE}.ino

@@ -13,4 +13,6 @@ class RemoteHandlerClass: public EventHandler {
         TwoWire *wire_;
 };
 
+extern RemoteHandlerClass RemoteHandler;
+
 #endif
