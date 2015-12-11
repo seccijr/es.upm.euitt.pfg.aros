@@ -7,6 +7,8 @@
 #include "utility/aros_definitions.h"
 
 char buffer[MMT_PACKET_LEN] = {0};
+Vector qv[AROS_MAX_VECTORS] = {};
+int qindex = 0;
 
 void setup() {
     Serial.begin(9600);
@@ -21,13 +23,11 @@ void loop() {
         commPacket((const byte *)buffer);
         memset(buffer, 0, MMT_PACKET_LEN);
     }
+    flushVectors();
 }
 
 void commBegin() {
     WiFlyWiFi.begin((char *)SECURED_SSID, (char *)SECURED_PASS);
-    IPAddress addr = WiFlyWiFi.localIP();
-    char addr_str[17] = {0};
-    sprintf(addr_str, "%u.%u.%u.%u", addr[0], addr[1], addr[2], addr[3]);
     WiFlyUDP.begin(AROS_DEFAULT_PORT);
 }
 
@@ -57,16 +57,22 @@ void commPacket(const byte *buffer) {
 }
 
 void masterVector(int n) {
-    if (n == MMT_VECTOR_LEN) {
+    if (n == MMT_VECTOR_LEN && qindex < AROS_MAX_VECTORS) {
         Vector v;
         VectorSerializer::deserialize(&v, &Wire);
+        qv[qindex++] = v;
+    }
+}
+
+void flushVectors() {
+    while (qindex > 0) {
+        qindex--;
+        Vector v = qv[qindex];
         IPAddress addr(v.direction.destination.endpoint[0], v.direction.destination.endpoint[1], v.direction.destination.endpoint[2], v.direction.destination.endpoint[3]);
-        char addr_str[17] = {0};
-        sprintf(addr_str, "%u.%u.%u.%u", addr[0], addr[1], addr[2], addr[3]);
-        //WiFlyUDP.beginPacket(addr, AROS_DEFAULT_PORT);
-        //WiFlyUDP.write(v.direction.source.resource);
-        //WiFlyUDP.write(v.direction.destination.resource);
-        //PacketSerializer::serialize((const Packet)v.packet, &WiFlyUDP);
-        //WiFlyUDP.endPacket();
+        WiFlyUDP.beginPacket(addr, AROS_DEFAULT_PORT);
+        WiFlyUDP.write(v.direction.source.resource);
+        WiFlyUDP.write(v.direction.destination.resource);
+        PacketSerializer::serialize((const Packet)v.packet, &WiFlyUDP);
+        WiFlyUDP.endPacket();
     }
 }
