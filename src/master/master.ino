@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Master.h>
-#include "EchoHandler.h"
-#include "PirouetteHandler.h"
+//#include "EchoHandler.h"
+//#include "PirouetteHandler.h"
 #include "FWHandler.h"
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
@@ -13,7 +13,7 @@ void setup() {
     Wire.onReceive(commVector);
     Registrar.registerSubscriber(Wildcard, &FWHandler);
     //Registrar.registerSubscriber(Localhost, &EchoHandler);
-    Registrar.registerSubscriber(Localhost, &PirouetteHandler);
+    //Registrar.registerSubscriber(Localhost, &PirouetteHandler);
 }
 
 void loop() {
