@@ -9,4 +9,7 @@
 #define AROS_MAX_REMOTES 2
 #define AROS_MAX_VECTORS 4
 
+#define MOTOR_COMMAND_LINE_FOLLOW 0x01 << 0
+#define MOTOR_COMMAND_TURN_ARROUND 0x01 << 1
+
 #endif
