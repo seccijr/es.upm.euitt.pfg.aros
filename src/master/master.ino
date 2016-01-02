@@ -1,19 +1,20 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Master.h>
-//#include "EchoHandler.h"
-//#include "PirouetteHandler.h"
+#include <ArduinoRobot.h>
+#include "TokenCollectorHandler.h"
 #include "FWHandler.h"
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
 
 void setup() {
     Serial.begin(9600);
+    Serial1.begin(9600);
+    Robot.beginSpeaker();
     Wire.begin(AROS_MASTER_WIRE_ADD);
     Wire.onReceive(commVector);
     Registrar.registerSubscriber(Wildcard, &FWHandler);
-    //Registrar.registerSubscriber(Localhost, &EchoHandler);
-    //Registrar.registerSubscriber(Localhost, &PirouetteHandler);
+    Registrar.registerSubscriber(Localhost, &TokenCollectorHandler);
 }
 
 void loop() {
