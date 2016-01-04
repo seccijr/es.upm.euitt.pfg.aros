@@ -1,8 +1,4 @@
 #include "TokenCollectorHandler.h"
-#include <Master.h>
-#include <ArduinoRobot.h>
-#include <Wire.h>
-#include <SPI.h>
 #include "utility/aros_definitions.h"
 
 #define COLLECTOR_TIMEOUT 30000
@@ -10,13 +6,53 @@
 
 TokenCollectorHandlerClass::TokenCollectorHandlerClass(RegistrarClass *registrar):
     registrar_(registrar) {
-
     }
 
 void TokenCollectorHandlerClass::handle(const Vector &v) {
-    Robot.beep(BEEP_DOUBLE);
+    Message message;
+    message.type = MMT_LONG;
+    switch (v.packet.message.value.l) {
+        case AROS_TOKEN_CMD:
+            collect();
+            message.value.l = AROS_TOKEN_POS;
+            break;
+        case AROS_TOKEN_REL:
+            openArm();
+            message.value.l = AROS_TOKEN_FRE;
+            break;
+        case AROS_TRANSPORT_END:
+            dispose();
+            message.value.l = AROS_TOKEN_END;
+            break;
+        default:
+            break;
+    }
+    Packet packet = {
+        MMT_POST,
+        message
+    };
+    Address net_all = {
+        MMT_DEF_RESOURCE,
+        {255, 255, 255, 255}
+    };
+    Direction backward = {
+        Localhost,
+        net_all
+    };
+    Vector ev = {
+        packet,
+        backward
+    };
+    registrar_->publish((const Vector)ev);
+}
+
+bool TokenCollectorHandlerClass::collect() {
+    openArm();
     Serial1.write(MOTOR_COMMAND_LINE_FOLLOW);
     bool result = waitForResponse(MOTOR_COMMAND_LINE_FOLLOW_END, COLLECTOR_TIMEOUT);
+    if (result) {
+        closeArm();
+    }
     if (result) {
         Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
         result = waitForResponse(MOTOR_COMMAND_TURN_ARROUND_END, COLLECTOR_TIMEOUT);
@@ -25,24 +61,16 @@ void TokenCollectorHandlerClass::handle(const Vector &v) {
         Serial1.write(MOTOR_COMMAND_LINE_FOLLOW);
         result = waitForResponse(MOTOR_COMMAND_LINE_FOLLOW_END, COLLECTOR_TIMEOUT);
     }
-    Message message = {
-        MMT_STR
-    };
-    memcpy(message.value.b, "DONE", 4);
-    Packet packet = {
-        MMT_POST,
-        message
-    };
-    Direction backward = {
-        v.direction.destination,
-        v.direction.source
-    };
-    Vector ev = {
-        packet,
-        backward
-    };
-    registrar_->publish((const Vector)ev);
-    Robot.beep(BEEP_LONG);
+    return result;
+}
+
+bool TokenCollectorHandlerClass::dispose() {
+    Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
+    bool result = waitForResponse(MOTOR_COMMAND_TURN_ARROUND_END, COLLECTOR_TIMEOUT);
+    if (result) {
+        closeArm();
+    }
+    return result;
 }
 
 bool TokenCollectorHandlerClass::waitForResponse(const long code, const long timeout) {
@@ -57,6 +85,24 @@ bool TokenCollectorHandlerClass::waitForResponse(const long code, const long tim
         exceeded = (millis() - start) > timeout;
     } while (!connected && !exceeded);
     return success;
+}
+
+void TokenCollectorHandlerClass::openArm() {
+    arm_.attach(TKD4);
+    for (int pos = 70; pos <= 180; pos += 1) {
+        arm_.write(pos);
+        delay(15);
+    }
+    arm_.detach();
+}
+
+void TokenCollectorHandlerClass::closeArm() {
+    arm_.attach(TKD4);
+    for (int pos = 180; pos >= 70; pos -= 1) {
+        arm_.write(pos);
+        delay(15);
+    }
+    arm_.detach();
 }
 
 TokenCollectorHandlerClass TokenCollectorHandler(&Registrar);

@@ -39,7 +39,7 @@ void PIDLineFollow::turnArround() {
     do {
         for (int count = mid_; count < mid_ + 3; count++) {
             int value = map(RobotMotor.IRread(count + 1), 0, 1023, 0, 100);
-            inside |= value < BORDER;
+            inside |= value < BORDER * 0.7;
         }
     } while (!inside);
 	RobotMotor.motorsStop();

@@ -1,20 +1,23 @@
 #include <Arduino.h>
 #include <Wire.h>
 #include <Master.h>
-#include <ArduinoRobot.h>
 #include "TokenCollectorHandler.h"
 #include "FWHandler.h"
+#include "RemoteHandler.h"
 #include "utility/credentials.h"
 #include "utility/aros_definitions.h"
+#include "utility/rol.h"
 
 void setup() {
     Serial.begin(9600);
     Serial1.begin(9600);
-    Robot.beginSpeaker();
     Wire.begin(AROS_MASTER_WIRE_ADD);
     Wire.onReceive(commVector);
     Registrar.registerSubscriber(Wildcard, &FWHandler);
+    Registrar.registerSubscriber(Netcast, &RemoteHandler);
+#ifdef AROS_ROL_COLLECTOR
     Registrar.registerSubscriber(Localhost, &TokenCollectorHandler);
+#endif
 }
 
 void loop() {
