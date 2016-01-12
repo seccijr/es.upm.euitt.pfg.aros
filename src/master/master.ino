@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <Master.h>
 #include "TokenCollectorHandler.h"
+#include "CarrierHandler.h"
 #include "FWHandler.h"
 #include "RemoteHandler.h"
 #include "utility/credentials.h"
@@ -15,8 +16,10 @@ void setup() {
     Wire.onReceive(commVector);
     Registrar.registerSubscriber(Wildcard, &FWHandler);
     Registrar.registerSubscriber(Netcast, &RemoteHandler);
-#ifdef AROS_ROL_COLLECTOR
+#if defined(AROS_ROL_COLLECTOR)
     Registrar.registerSubscriber(Localhost, &TokenCollectorHandler);
+#elif defined(AROS_ROL_CARRIER)
+    Registrar.registerSubscriber(Localhost, &CarrierHandler);
 #endif
 }
 

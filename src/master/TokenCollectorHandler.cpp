@@ -14,19 +14,25 @@ void TokenCollectorHandlerClass::handle(const Vector &v) {
     switch (v.packet.message.value.l) {
         case AROS_TOKEN_CMD:
             collect();
-            message.value.l = AROS_TOKEN_POS;
+            answer(AROS_TOKEN_POS);
             break;
         case AROS_TOKEN_REL:
-            openArm();
-            message.value.l = AROS_TOKEN_FRE;
+            //openArm();
+            answer(AROS_TOKEN_FRE);
             break;
         case AROS_TRANSPORT_END:
             dispose();
-            message.value.l = AROS_TOKEN_END;
+            answer(AROS_TOKEN_END);
             break;
         default:
             break;
     }
+}
+
+bool TokenCollectorHandlerClass::answer(const unsigned long msg) {
+    Message message;
+    message.type = MMT_LONG;
+    message.value.l = msg;
     Packet packet = {
         MMT_POST,
         message
@@ -47,11 +53,11 @@ void TokenCollectorHandlerClass::handle(const Vector &v) {
 }
 
 bool TokenCollectorHandlerClass::collect() {
-    openArm();
+    //openArm();
     Serial1.write(MOTOR_COMMAND_LINE_FOLLOW);
     bool result = waitForResponse(MOTOR_COMMAND_LINE_FOLLOW_END, COLLECTOR_TIMEOUT);
     if (result) {
-        closeArm();
+        //closeArm();
     }
     if (result) {
         Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
@@ -68,7 +74,7 @@ bool TokenCollectorHandlerClass::dispose() {
     Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
     bool result = waitForResponse(MOTOR_COMMAND_TURN_ARROUND_END, COLLECTOR_TIMEOUT);
     if (result) {
-        closeArm();
+        //closeArm();
     }
     return result;
 }

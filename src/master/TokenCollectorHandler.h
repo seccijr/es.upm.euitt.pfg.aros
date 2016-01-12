@@ -12,6 +12,7 @@ class TokenCollectorHandlerClass: public EventHandler {
         bool waitForResponse(const long code, const long timeout);
         bool collect();
         bool dispose();
+        bool answer(const unsigned long msg);
         void openArm();
         void closeArm();
         Servo arm_;
