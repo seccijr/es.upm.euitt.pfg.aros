@@ -17,7 +17,7 @@ void TokenCollectorHandlerClass::handle(const Vector &v) {
             answer(AROS_TOKEN_POS);
             break;
         case AROS_TOKEN_REL:
-            //openArm();
+            openArm();
             answer(AROS_TOKEN_FRE);
             break;
         case AROS_TRANSPORT_END:
@@ -53,11 +53,11 @@ bool TokenCollectorHandlerClass::answer(const unsigned long msg) {
 }
 
 bool TokenCollectorHandlerClass::collect() {
-    //openArm();
+    openArm();
     Serial1.write(MOTOR_COMMAND_LINE_FOLLOW);
     bool result = waitForResponse(MOTOR_COMMAND_LINE_FOLLOW_END, COLLECTOR_TIMEOUT);
     if (result) {
-        //closeArm();
+        closeArm();
     }
     if (result) {
         Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
@@ -74,7 +74,7 @@ bool TokenCollectorHandlerClass::dispose() {
     Serial1.write(MOTOR_COMMAND_TURN_ARROUND);
     bool result = waitForResponse(MOTOR_COMMAND_TURN_ARROUND_END, COLLECTOR_TIMEOUT);
     if (result) {
-        //closeArm();
+        closeArm();
     }
     return result;
 }
